@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+	<head>
+		<title>DNA Skew Chart</title>
+		<script type="text/javascript" src="../js/DNAText.js"></script>
+		<script src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }"></script>
+	</head>
+	<body>
+		<div>
+		<p>
+			This sample will generate a skew graph for a particular DNA string and visualize the results using <a href="https://google-developers.appspot.com/chart/">Google charts</a>. 
+			<br/>Showing which position in the DNA string is trending positive or negative indicating position relative to oriC.
+			<br/>Performance trends linearly, with the majority of time spent in visualization routine. 
+			<br/>Sample has been tested with up to 45kp the analysis is quite quick ~20ms but the visualization can take ~4 seconds. 
+			<br/>The visualization code is probably a good candidate for a web worker. 
+		</p>
+		</div>
+		<div>
+			<label for="dnaString">Enter DNA String</label><br/>
+			<textarea id="dnaString" rows="6" cols="120" placeholder="CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCTTGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG"></textarea>
+			<br/>
+			<button type="button" onclick="generateSkewGraph()">Generate Skew Graph</button><br/>
+		</div>
+		<div style="width:30%">
+			<div>
+				<div id="skew_chart" style="width: 900px; height: 500px"></div>
+			</div>
+		</div>
+		<div>
+			<table>
+				<tr>
+					<td>Total kbp</td><td id="totalKBValue"></td>
+				</tr>
+				<tr>
+					<td>Skew Analysis time (ms)</td><td id="skewnAlaysisValue"></td>
+				</tr>
+				<tr>	
+					<td>Visualization generation time (ms)</td><td id="visualValue"></td>
+				</tr>
+				<tr>	
+					<td>Total Time (ms)</td><td id="TotalExecutionTime"></td>
+				</tr>
+			</table>
+		</div>
+
+
+	<script>
+		function generateSkewGraph(){
+			var startTime = new Date();
+			var dnaString = document.getElementById('dnaString').value;
+			var trendArray = GetTrendArray(dnaString);			
+
+			//format trend array for visualization
+			var graphDataTable = new Array();
+			graphDataTable.push(['Postion','Value']);
+			for (var j =0; j < trendArray.length; j++) {
+				graphDataTable.push([j,Number(trendArray[j])]);
+			}
+
+			//log performance
+			document.getElementById('totalKBValue').innerHTML = (trendArray.length /2) / 1000;
+			var endTimeAnalysis = new Date();
+			document.getElementById('skewnAlaysisValue').innerHTML = endTimeAnalysis - startTime;
+
+			//generate visualization
+			var data = google.visualization.arrayToDataTable(graphDataTable);
+
+			var options = {
+	          title: 'Skew Graph',
+	          curveType: 'function',
+	          legend: { position: 'bottom' },
+	          enableInteractivity: false,
+	          async: true
+        	};
+
+        	var chart = new google.visualization.LineChart(document.getElementById('skew_chart'));
+
+        	chart.draw(data, options);	
+        	var endTimevis = new Date();
+			document.getElementById('visualValue').innerHTML = endTimevis - endTimeAnalysis;
+			document.getElementById('TotalExecutionTime').innerHTML = endTimevis - startTime;		
+		}//end generateSkewGraph
+
+	</script>
+	</body>
+</html>
