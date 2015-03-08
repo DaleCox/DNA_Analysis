@@ -3,7 +3,7 @@ DNA Analysis Library
 
 This is a JavaScript Library that can be used to analyze DNA. I'm in the process of creating samples for the individual functions. 
 
-I have a sample that shows the Skew of the DNA strand that is being looked at. 
+I have a sample that shows the Skew of the DNA strand that is being looked at. You can see it here: http://dalecox.github.io/DNA_Analysis/samples/SkewChart.html 
 
 TODO List:
 - Add More Samples
