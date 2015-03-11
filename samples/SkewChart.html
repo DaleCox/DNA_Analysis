@@ -6,7 +6,7 @@
 		<script src="https://www.google.com/jsapi?autoload={
             'modules':[{
               'name':'visualization',
-              'version':'1',
+              'version':'0.1',
               'packages':['corechart']
             }]
           }"></script>
@@ -17,13 +17,13 @@
 			This sample will generate a skew graph for a particular DNA string and visualize the results using <a href="https://google-developers.appspot.com/chart/">Google charts</a>. 
 			<br/>Showing which position in the DNA string is trending positive or negative indicating position relative to oriC.
 			<br/>Performance trends linearly, with the majority of time spent in visualization routine. 
-			<br/>Sample has been tested with up to 45kp the analysis is quite quick ~20ms but the visualization can take ~4 seconds. 
-			<br/>The visualization code is probably a good candidate for a web worker. 
-			<br/> here is a sample data set: CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCTTGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG
+			<br/>Sample has been tested with up to 45kp the analysis is quite quick ~20ms but the visualization can take 2 - 3 seconds. 
+			<br/><br/>Big thanks to Daniel LaLiberte for his help in making the visualization perform better.  
+			<br/><br/> Here is a sample data set to show the concept: CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCTTGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG
 		</p>
 		</div>
 		<div>
-			<label for="dnaString">Enter DNA String</label><br/>
+			<label for="dnaString">Enter A DNA String</label><br/>
 			<textarea id="dnaString" rows="6" cols="120" placeholder="CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCTTGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG"></textarea>
 			<br/>
 			<button type="button" onclick="generateSkewGraph()">Generate Skew Graph</button><br/>
@@ -80,21 +80,27 @@
 
 			//generate visualization
 			var data = google.visualization.arrayToDataTable(graphDataTable);
+			var formatter = new google.visualization.NumberFormat({pattern: ''});
+                        formatter.format(data, 0);
 
 			var options = {
 	          title: 'Skew Graph',
 	          curveType: 'function',
 	          legend: { position: 'bottom' },
 	          enableInteractivity: false,
-	          async: true
+	          async: true,
+		  	  tooltip: { trigger: 'none' }
         	};
 
         	var chart = new google.visualization.LineChart(document.getElementById('skew_chart'));
 
-        	chart.draw(data, options);	
-        	var endTimevis = new Date();
+		google.visualization.events.addListener(chart, 'ready', function() {
+			var endTimevis = new Date();
 			document.getElementById('visualValue').innerHTML = endTimevis - endTimeAnalysis;
-			document.getElementById('TotalExecutionTime').innerHTML = endTimevis - startTime;		
+			document.getElementById('TotalExecutionTime').innerHTML = endTimevis - startTime;	
+		});
+        	chart.draw(data, options);	
+	
 		}//end generateSkewGraph
 
 	</script>
